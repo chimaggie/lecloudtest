@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "test1",
+      "person": {
+        "name": "stephen",
+        "age": 4,
+        "assertName": "stephen",
+        "assertAge": 4
+      }
+    },
+    {
+      "name": "test2",
+      "person": {
+        "name": "jonathan",
+        "age": 1,
+        "assertName": "jonathan",
+        "assertAge": 1
+      }
+    }
+  ]
+}

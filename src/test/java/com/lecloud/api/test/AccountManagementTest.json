@@ -1,0 +1,35 @@
+{
+  "beforeClassConfig": [
+    {
+      "name": "cpuToken",
+      "apiCmd": {
+        "url": "/api/cpu/authenticate",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": "username=admin&password=admin&vin=09876543211234567"
+      },
+      "resultPath": "token"
+    }
+  ],
+  "tests": [
+    {
+      "name": "getAccount",
+      "cmd": {
+        "url": "/api/account",
+        "method": "GET",
+        "headers": {
+          "X-Auth-Token": "${cpuToken}"
+        }
+      },
+      "expect": {
+        "statusCode": 200,
+        "bodyValues": {
+          "login": "admin",
+          "firstName": "admin"
+        }
+      }
+    }
+  ]
+}
