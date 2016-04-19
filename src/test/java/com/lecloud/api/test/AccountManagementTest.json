@@ -1,14 +1,15 @@
 {
+  "baseUrl": "http://api.ffauto.us:8080/lecloud",
   "beforeClassConfig": [
     {
-      "name": "cpuToken",
+      "name": "pcToken",
       "apiCmd": {
-        "url": "/api/cpu/authenticate",
+        "url": "/api/pc/authenticate",
         "method": "POST",
         "headers": {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        "body": "username=admin&password=admin&vin=09876543211234567"
+        "body": "username=admin&password=admin"
       },
       "resultPath": "token"
     }
@@ -20,7 +21,7 @@
         "url": "/api/account",
         "method": "GET",
         "headers": {
-          "X-Auth-Token": "${cpuToken}"
+          "X-Auth-Token": "${pcToken}"
         }
       },
       "expect": {
@@ -29,6 +30,40 @@
           "login": "admin",
           "firstName": "admin"
         }
+      }
+    },
+    {
+      "name": "saveAccount",
+      "cmd": {
+        "url": "/api/account",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Auth-Token": "${pcToken}"
+        },
+        "body": {
+          "login": "admin",
+          "password": null,
+          "firstName": "admin",
+          "lastName": "Administrator",
+          "email": "admin@localhost",
+          "activated": "true",
+          "langKey": "cn",
+          "vin": null,
+          "carName": null,
+          "carNickname": null,
+          "carPassword": null,
+          "model": null,
+          "imei": null,
+          "imsi": null,
+          "carNumber": null,
+          "authorities": [
+            "ROLE_USER", "ROLE_ADMIN"
+          ]
+        }
+      },
+      "expect": {
+        "statusCode": 200
       }
     }
   ]

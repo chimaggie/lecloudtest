@@ -30,7 +30,9 @@ public class ApiCmdDeserializer extends JsonDeserializer<ApiCmd> {
             cmd.setHeaders(headers);
         }
         if (node.has("body")) {
-            cmd.setBody(node.get("body").toString());
+            JsonNode bodyNode = node.get("body");
+            if (bodyNode.isValueNode()) cmd.setBody(bodyNode.asText());
+            else cmd.setBody(bodyNode.toString());
         }
         return cmd;
     }

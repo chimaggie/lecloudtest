@@ -18,8 +18,8 @@ public class ApiResultDeserializer extends JsonDeserializer<ApiResult> {
     public ApiResult deserialize(JsonParser jp, DeserializationContext ctx) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         ApiResult result = new ApiResult();
-        if (node.has("status")) {
-            result.setStatusCode(node.get("status").intValue());
+        if (node.has("statusCode")) {
+            result.setStatusCode(node.get("statusCode").intValue());
         }
         if (node.has("bodyValues")) {
             JsonNode bodyNode = node.get("bodyValues");

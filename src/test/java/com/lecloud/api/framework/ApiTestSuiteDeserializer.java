@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by hongyuechi on 4/16/16.
@@ -22,22 +20,13 @@ public class ApiTestSuiteDeserializer extends JsonDeserializer<ApiTestSuite> {
         JsonNode node = jp.getCodec().readTree(jp);
         ApiTestSuite suite = new ApiTestSuite();
         if (node.has("baseUrl")) suite.setBaseUrl(node.get("baseUrl").textValue());
-        if (node.has("classConfig")) {
-            JsonNode classConfigNode = node.get("classConfig");
-            Map<String, Object> configs = new HashMap<>();
-            for (Iterator<String> iter = classConfigNode.fieldNames(); iter.hasNext();) {
-                String key = iter.next();
-                JsonNode val = classConfigNode.get(key);
-                if (val.isNumber()) configs.put(key, val.numberValue());
-                else configs.put(key, val.asText());
-            }
-            suite.setClassConfig(configs);
-        }
-        suite.setBeforeClassConfig(this.<ApiTestSuiteConfig>getConfigs(node, "beforeClassConfig"));
-        suite.setAfterTestConfig(this.<ApiTestSuiteConfig>getConfigs(node, "afterTestConfig"));
-        suite.setAfterClassConfig(this.<ApiTestSuiteConfig>getConfigs(node, "afterClassConfig"));
-        List<ApiTest> testList = getConfigs(node, "tests");
-        Map<String, ApiTest> testMap = new HashMap<>();
+        suite.setClassConfig(parseMap(node.get("classConfig"), String.class, String.class));
+        suite.setBeforeClassConfig(parseList(node.get("beforeClassConfig"), ApiTestSuiteConfig.class));
+        suite.setBeforeTestConfig(parseList(node.get("beforeTestConfig"), ApiTestSuiteConfig.class));
+        suite.setAfterTestConfig(parseList(node.get("afterTestConfig"), ApiTestSuiteConfig.class));
+        suite.setAfterClassConfig(parseList(node.get("afterClassConfig"), ApiTestSuiteConfig.class));
+        List<ApiTest> testList = parseList(node.get("tests"), ApiTest.class);
+        Map<String, ApiTest> testMap = new LinkedHashMap<>();
         for (ApiTest test : testList) {
             testMap.put(test.getName(), test);
         }
@@ -45,10 +34,15 @@ public class ApiTestSuiteDeserializer extends JsonDeserializer<ApiTestSuite> {
         return suite;
     }
 
-    private <T> List<T> getConfigs(JsonNode node, String key) throws IOException {
-        if (!node.has(key)) {
-            return null;
-        }
-        return new ObjectMapper().readValue(node.get(key).toString(), new TypeReference<List<T>>(){});
+    private <T> List<T> parseList(JsonNode node, Class<T> listTypeClass) throws IOException {
+        if (node == null) return null;
+        return new ObjectMapper().readValue(node.toString(),
+                TypeFactory.defaultInstance().constructCollectionType(List.class, listTypeClass));
+    }
+
+    private <K,V> Map<K,V> parseMap(JsonNode node, Class<K> mapKeyClass, Class<V> mapValClass) throws IOException {
+        if (node == null) return null;
+        return new ObjectMapper().readValue(node.toString(),
+                TypeFactory.defaultInstance().constructMapType(Map.class, mapKeyClass, mapValClass));
     }
 }
