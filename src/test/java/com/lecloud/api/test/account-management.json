@@ -1,23 +1,21 @@
 {
   "baseUrl": "http://api.ffauto.us:8080/lecloud",
-  "beforeClassConfig": [
+  "beforeGroupConfig": [
     {
       "name": "pcToken",
-      "apiCmd": {
+      "command": {
         "url": "/api/pc/authenticate",
         "method": "POST",
-        "headers": {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
+        "contentType": "application/x-www-form-urlencoded",
         "body": "username=admin&password=admin"
       },
-      "resultPath": "token"
+      "refPath": "token"
     }
   ],
   "tests": [
     {
       "name": "getAccount",
-      "cmd": {
+      "command": {
         "url": "/api/account",
         "method": "GET",
         "headers": {
@@ -34,11 +32,11 @@
     },
     {
       "name": "saveAccount",
-      "cmd": {
+      "command": {
         "url": "/api/account",
         "method": "POST",
+        "contentType": "application/json",
         "headers": {
-          "Content-Type": "application/json",
           "X-Auth-Token": "${pcToken}"
         },
         "body": {
